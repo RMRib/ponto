@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="css/login_stylesheet.css?v=1.0" media="screen" />
+  <link rel="stylesheet" type="text/css" href="css/stylesheet.css?v=1.0" media="screen" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,25 +15,61 @@
 
 <body>
   <div id="login-wrapper">
-    <img id="nino" src="images/nino_joia.png" alt="ConsiAppz Logo" class="logo" />
-    <div class="login-container">
+    <div id="registerContainer" class="registerContainer" style="display:none;">
+        <img id="logo_vertical" src="images/logo_vertical.png" alt="User Image">
+        <input id="name" type="text" placeholder="Nome">
+        <input id="newEmail" type="email" placeholder="Email">
+        <input id="newPassword" type="password" placeholder="Senha">
+        <button onclick="registrarUsuario()"> <i class="fas fa-sign-in-alt"></i> Cadastrar</button>
+    </div>
+    <div id="loginContainer" class="loginContainer">
       <img id="logo_vertical" src="images/logo_vertical.png" alt="User Image">
       <input id="email" type="text" placeholder="Usuário" required>
       <input id="password" type="password" placeholder="Senha" required>
-      <button onclick="login()">Entrar</button><br><br>
-      <a href="public/cadastro.html" class="link" style="font-size: small;">Não tem uma conta? Cadastre-se</a>
+      <button onclick="login()" class="btn-primary">
+        <i class="fas fa-sign-in-alt"></i> Entrar
+      </button><br><br>
+      <a onclick="UIUtils.toggleView(loginContainer, registerContainer);" class="link" style="font-size: small;">
+        <i class="fas fa-user-plus"></i> Não tem uma conta? Cadastre-se
+      </a>
     </div>
   </div>
-  <div id="painel" style="display:none;">
-    <p id="userName"></p>
-    <p>Olá, <span id="nome"></span></p>
-    <button onclick="registrar('in')">Entrar</button>
-    <button onclick="registrar('out')">Sair</button>
-    <button onclick="verResumoHoje()">Ver resumo do dia</button>
-    <button onclick="verTabelaMes()">Ver registros do mês</button>
-    <p id="resumoDia"></p>
-    <div id="tabelaMes"></div>
-  </div>
+    <div id="painel" style="display:none;">
+        <div class="text-center mb-20">
+            <h2><i class="fas fa-clock"></i> Sistema de Ponto Eletrônico</h2>
+            <p style="font-size: 18px; color: #667eea;">
+                Olá, <strong><span id="nome"></span></strong>! 
+                <button onclick="logout()" style="background: #dc3545; padding: 5px 10px; font-size: 12px; margin-left: 10px;">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </p>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="text-center mb-20">
+            <button onclick="registrar('in')" class="btn-success">
+                <i class="fas fa-play"></i> Registrar Entrada
+            </button>
+            <button onclick="registrar('out')" class="btn-danger">
+                <i class="fas fa-stop"></i> Registrar Saída
+            </button>
+        </div>
+
+        <!-- Resumo do Dia -->
+        <div id="resumoDia" class="text-center">
+            <i class="fas fa-calendar-day"></i> Carregando resumo do dia...
+        </div>
+
+        <!-- Botões de Relatórios -->
+        <div class="text-center mt-20">
+            <button onclick="verResumoHoje()" class="btn-info">
+                <i class="fas fa-chart-line"></i> Atualizar Resumo
+            </button>
+            <button onclick="verTabelaMes()" class="btn-info">
+                <i class="fas fa-table"></i> Ver Registros do Mês
+            </button>
+        </div>
+
   <script src="src/timesheet.js"></script>
 </body>
 
