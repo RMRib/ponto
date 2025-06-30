@@ -5,7 +5,7 @@
 }
 body {
     font-family: 'Noto Sans', sans-serif;
-    background: linear-gradient(135deg, #ffffff 20%, #9fadf3 100%);
+    background: linear-gradient(135deg, #c2c2c2 20%, #9fadf3 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -34,6 +34,19 @@ h2{
     width: 400px;
 }
 
+#painel{
+    display: flex;
+    text-align: center;
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+    
+}
+
+#painel img{
+    max-width: 20%;
+}
 
 
 #nino {
@@ -68,6 +81,17 @@ input[type="text"]:focus, input[type="password"]:focus {
     background: white;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+}
+
+#tabelaMes {
+    width: 100%;
+    padding: 10px;
+    border-collapse: collapse;
+}
+#tabelaMes table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 15px 5px; /* Espaço vertical entre linhas, ajuste como preferir */
 }
 
 /* Botões */

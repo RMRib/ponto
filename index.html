@@ -16,11 +16,11 @@
 <body>
   <div id="login-wrapper">
     <div id="registerContainer" class="registerContainer" style="display:none;">
-        <img id="logo_vertical" src="images/logo_vertical.png" alt="User Image">
-        <input id="name" type="text" placeholder="Nome">
-        <input id="newEmail" type="email" placeholder="Email">
-        <input id="newPassword" type="password" placeholder="Senha">
-        <button onclick="registrarUsuario()"> <i class="fas fa-sign-in-alt"></i> Cadastrar</button>
+      <img id="logo_vertical" src="images/logo_vertical.png" alt="User Image">
+      <input id="name" type="text" placeholder="Nome">
+      <input id="newEmail" type="email" placeholder="Email">
+      <input id="newPassword" type="password" placeholder="Senha">
+      <button onclick="registrarUsuario()"> <i class="fas fa-sign-in-alt"></i> Cadastrar</button>
     </div>
     <div id="loginContainer" class="loginContainer">
       <img id="logo_vertical" src="images/logo_vertical.png" alt="User Image">
@@ -34,45 +34,38 @@
       </a>
     </div>
   </div>
-    <div id="painel" style="display:none;">
-        <div class="text-center mb-20">
-            <h2><i class="fas fa-clock"></i> Sistema de Ponto Eletrônico</h2>
-            <p style="font-size: 18px; color: #667eea;">
-                Olá, <strong><span id="nome"></span></strong>! 
-                <button onclick="logout()" style="background: #dc3545; padding: 5px 10px; font-size: 12px; margin-left: 10px;">
-                    <i class="fas fa-sign-out-alt"></i> Sair
-                </button>
-            </p>
-        </div>
+  <div id="painel" style="display:none;">
+    <div class="text-center mb-20">
+      <h2><i class="fas fa-clock"></i> Sistema de Ponto Consigaz Jaguaribe</h2>
+      <p style="font-size: 18px; color: #667eea;">
+        Olá, <strong><span id="nome"></span></strong>!
+        <button onclick="logout()" style="background: #dc3545; padding: 5px 10px; font-size: 12px; margin-left: 10px;">
+          <i class="fas fa-sign-out-alt"></i> Sair
+        </button>
+      </p>
+    </div>
 
-        <!-- Botões de Ação -->
-        <div class="text-center mb-20">
-            <button onclick="registrar('in')" class="btn-success">
-                <i class="fas fa-play"></i> Registrar Entrada
-            </button>
-            <button onclick="registrar('out')" class="btn-danger">
-                <i class="fas fa-stop"></i> Registrar Saída
-            </button>
-        </div>
+    <!-- Botões de Ação -->
+    <div class="text-center mb-20">
+      <button onclick="registrar('in')" class="btn-success">
+        <i class="fas fa-play"></i> Registrar Entrada
+      </button>
+      <button onclick="registrar('out')" class="btn-danger">
+        <i class="fas fa-stop"></i> Registrar Saída
+      </button>
+    </div>
 
-        <!-- Resumo do Dia -->
-        <div id="resumoDia" class="text-center">
-            
-        </div>
-        <div id="tabelaMes" class="text-center" onload="verTabelaMes()">
-            
-        </div>
+    <p id="resumoDia"></p><br>
+    <div id="tabelaMes"></div>
+    <div id="resumoMes"></div>
 
-        <!-- Botões de Relatórios -->
-        <!--
-        <div class="text-center mt-20">
-            <button onclick="verResumoHoje()" class="btn-info">
-                <i class="fas fa-chart-line"></i> Atualizar Resumo
-            </button>
-            <button onclick="verTabelaMes()" class="btn-info">
-                <i class="fas fa-table"></i> Ver Registros do Mês
-            </button>
-        </div>
+    <div id="relogio" style="margin-top:30px; font-size:22px; color:#202174; font-weight:bold; text-align:center;">
+    </div>
+  </div>
+  </div>
+
+  <!-- Botões de Relatórios -->
+  <!--
       -->
 
   <script src="src/timesheet.js"></script>

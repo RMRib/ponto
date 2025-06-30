@@ -58,12 +58,12 @@ class UIUtils {
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
         notification.textContent = message;
-        
+
         document.body.appendChild(notification);
-        
+
         // Mostra a notificação
         setTimeout(() => notification.classList.add('show'), 100);
-        
+
         // Remove a notificação após o tempo especificado
         setTimeout(() => {
             notification.classList.remove('show');
@@ -106,7 +106,7 @@ class UIUtils {
 class ApiService {
     static async makeRequest(endpoint, options = {}) {
         const url = `${API_CONFIG.baseURL}${endpoint}`;
-        
+
         const defaultOptions = {
             headers: {
                 'Content-Type': 'application/json',
@@ -117,11 +117,11 @@ class ApiService {
 
         try {
             const response = await fetch(url, finalOptions);
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             return await response.json();
         } catch (error) {
             console.error('API request failed:', error);
@@ -169,7 +169,7 @@ class AuthController {
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         const loginButton = document.querySelector('button[onclick="login()"]');
-        
+
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
 
@@ -183,7 +183,7 @@ class AuthController {
         try {
             const userData = await ApiService.login(email, password);
             this.appState.setUser(userData);
-            
+
             UIUtils.showNotification('Login realizado com sucesso!', 'success');
             this.showDashboard();
         } catch (error) {
@@ -192,13 +192,14 @@ class AuthController {
         } finally {
             UIUtils.hideLoading(loginButton, originalText);
         }
+
     }
 
     async register() {
         const nameInput = document.getElementById('name');
         const emailInput = document.getElementById('newEmail');
         const passwordInput = document.getElementById('newPassword');
-        
+
         const name = nameInput.value.trim();
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
@@ -221,16 +222,23 @@ class AuthController {
         const loginWrapper = document.getElementById('login-wrapper');
         const painel = document.getElementById('painel');
         const nomeElement = document.getElementById('nome');
-        
+
         UIUtils.toggleView(loginWrapper, painel);
         nomeElement.textContent = this.appState.currentUser.name;
+
+        app.pontoController.verResumoHoje();
+        app.pontoController.verTabelaMes();
+
     }
 
     logout() {
         this.appState.clearUser();
         const loginWrapper = document.getElementById('login-wrapper');
         const painel = document.getElementById('painel');
-        
+
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+
         UIUtils.toggleView(painel, loginWrapper);
         UIUtils.showNotification('Logout realizado com sucesso!', 'info');
     }
@@ -261,7 +269,7 @@ class PontoController {
             await ApiService.registrarPonto(this.appState.currentUser.id, tipo);
             const tipoTexto = tipo === 'in' ? 'entrada' : 'saída';
             UIUtils.showNotification(`Ponto de ${tipoTexto} registrado!`, 'success');
-            
+
             // Atualiza automaticamente o resumo do dia
             await this.verResumoHoje();
         } catch (error) {
@@ -279,10 +287,10 @@ class PontoController {
         }
 
         const hoje = new Date().toISOString().slice(0, 10);
-        
+
         try {
             const data = await ApiService.getResumoDia(this.appState.currentUser.id, hoje);
-            
+
             const resumoElement = document.getElementById('resumoDia');
             resumoElement.innerHTML = `
                 <strong>Resumo do Dia</strong><br>
@@ -303,7 +311,7 @@ class PontoController {
 
         const hoje = new Date();
         const mesAtual = hoje.toISOString().slice(0, 7);
-        
+
         try {
             const dados = await ApiService.getHorasMes(this.appState.currentUser.id, mesAtual);
             this.renderTabelaMes(dados);
@@ -332,47 +340,67 @@ class PontoController {
                 <thead>
                     <tr>
                         <th>Data</th>
-                        <th>1ª Entrada</th>
-                        <th>1ª Saída</th>
-                        <th>2ª Entrada</th>
-                        <th>2ª Saída</th>
+                        <th>Entrada</th>
+                        <th>Saída</th>
+                        <th>Entrada</th>
+                        <th>Saída</th>
+                        <th>Entrada</th>
+                        <th>Saída</th>
                         <th>Total</th>
                     </tr>
                 </thead>
                 <tbody>
         `;
 
+        let saldoTotalMin = 0;
+
         for (const data in agrupadoPorData) {
             const registros = agrupadoPorData[data];
-            let colunas = ['', '', '', ''];
+            let colunas = ['', '', '', '', '', ''];
             let totalMin = 0;
+            console.log(`Processando data: ${data}`, registros);
+            // Converte data de dd/mm/yyyy para yyyy-mm-dd
+            const [dia, mes, ano] = data.split('/');
+            const dataISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
 
-            // Preenche as colunas com os horários
-            for (let i = 0; i < registros.length; i += 2) {
+            for (let i = 0; i < 6; i += 2) {
                 if (registros[i] && registros[i].tipo === 'in') colunas[i] = registros[i].hora;
                 if (registros[i + 1] && registros[i + 1].tipo === 'out') colunas[i + 1] = registros[i + 1].hora;
 
                 // Calcula o tempo trabalhado
-                if (registros[i + 1]) {
-                    const entrada = new Date(`${data} ${registros[i].hora}`);
-                    const saida = new Date(`${data} ${registros[i + 1].hora}`);
+                if (registros[i] && registros[i + 1]) {
+                    const entrada = new Date(`${dataISO}T${registros[i].hora}:00`);
+                    const saida = new Date(`${dataISO}T${registros[i + 1].hora}:00`);
                     totalMin += Math.floor((saida - entrada) / 60000);
                 }
             }
 
+            saldoTotalMin += totalMin;
+
             html += `
-                <tr>
-                    <td><strong>${data}</strong></td>
-                    <td>${colunas[0] || '-'}</td>
-                    <td>${colunas[1] || '-'}</td>
-                    <td>${colunas[2] || '-'}</td>
-                    <td>${colunas[3] || '-'}</td>
-                    <td><strong>${UIUtils.formatTime(totalMin)}</strong></td>
-                </tr>
-            `;
+        <tr>
+            <td><strong>${data}</strong></td>
+            <td>${colunas[0] || '-'}</td>
+            <td>${colunas[1] || '-'}</td>
+            <td>${colunas[2] || '-'}</td>
+            <td>${colunas[3] || '-'}</td>
+            <td>${colunas[4] || '-'}</td>
+            <td>${colunas[5] || '-'}</td>
+            <td><strong>${UIUtils.formatTime(totalMin)}</strong></td>
+        </tr>
+    `;
         }
 
-        html += '</tbody></table>';
+        html += `
+        </tbody>
+    </table>`;
+
+    let resumoMes = `    <div style="margin-top:10px;text-align:right"><br>
+        <strong>Saldo Total do Mês: ${UIUtils.formatTime(saldoTotalMin)}</strong>
+    </div>`
+    
+    document.getElementById('resumoMes').innerHTML = resumoMes;    
+
         document.getElementById('tabelaMes').innerHTML = html;
     }
 }
@@ -383,17 +411,17 @@ class App {
         this.appState = new AppState();
         this.authController = new AuthController(this.appState);
         this.pontoController = new PontoController(this.appState);
-        
-        this.init();
+
+        //this.init();
     }
 
     init() {
         // Verifica se há usuário logado
         this.authController.checkAuthState();
-        
+
         // Configura eventos globais
         this.setupGlobalEvents();
-        
+
         console.log('Aplicação inicializada com sucesso!');
     }
 
@@ -413,8 +441,11 @@ class App {
 // Funções globais para compatibilidade com o HTML existente
 let app;
 
+
 function login() {
     app.authController.login();
+
+
 }
 
 function registrarUsuario() {
@@ -441,8 +472,18 @@ function logout() {
     app.authController.logout();
 }
 
+function atualizarRelogio() {
+    const agora = new Date();
+    const horas = agora.getHours().toString().padStart(2, '0');
+    const minutos = agora.getMinutes().toString().padStart(2, '0');
+    const segundos = agora.getSeconds().toString().padStart(2, '0');
+    document.getElementById('relogio').textContent = `${horas}:${minutos}:${segundos}`;
+  }
+  setInterval(atualizarRelogio, 1000);
+  atualizarRelogio();
 // Inicializa a aplicação quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', () => {
     app = new App();
+    app.init();
 });
 
